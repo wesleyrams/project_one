@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Success</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        #qrcode {
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="qrcode"></div>
+    <script>
+        const queryParams = new URLSearchParams(window.location.search);
+        const sessionId = queryParams.get('session_id');
+
+        async function fetchSessionDetails(sessionId) {
+            const response = await fetch(`/api/stripe-session?session_id=${sessionId}`);
+            const data = await response.json();
+            return data.coupleUrl; // Supondo que você retorna a URL do casal aqui
+        }
+
+        fetchSessionDetails(sessionId).then(coupleUrl => {
+            const qrCodeContainer = document.getElementById('qrcode');
+            QRCode.toCanvas(qrCodeContainer, coupleUrl, { width: 200 }, (error) => {
+                if (error) console.error('Error generating QR code:', error);
+            });
+        });
+    </script>
+</body>
+</html>
